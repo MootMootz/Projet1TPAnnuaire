@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class Annuaire {
 
 	public static void main(String[] args) {
@@ -17,11 +16,14 @@ public class Annuaire {
 
 		try {
 			File myObj = new File("src/main/java/fr/isika/cda24/TPAnnuaire/doc/STAGIAIRES.DON");
-			Scanner myReader = new Scanner(myObj);
+			Scanner myReader = new Scanner(myObj); // lecture fichier STAGIARE.DON
 
-			int ligneIteration = 1;
+			int ligneIteration = 1; // itération
 			String nom = null, prenom = null, departement = null, promo = null, annee = null;
 
+			/*
+			 * tant qu'il y a une ligne, lis le doc quand il y a une étoile, nouveau cycle
+			 */
 			while (myReader.hasNextLine()) {
 
 				String data = myReader.nextLine();
@@ -63,10 +65,10 @@ public class Annuaire {
 			System.out.println("Aïe, y'a un problème quelque part !");
 			e.printStackTrace();
 		}
-		
-		
-		// Export .csv  ----------------------------------------------------------------------------------------------------------------------
-		
+
+		// Export .csv
+		// ----------------------------------------------------------------------------------------------------------------------
+
 		final String DELIMITEREXPORT = ",";
 		final String SEPARATOREXPORT = "\n";
 		final String HEADEREXPORT = "Nom,Prenom,Promo,Departement,Annee";
@@ -82,7 +84,7 @@ public class Annuaire {
 			// Ajouter une nouvelle ligne après l'en-tête
 			file.append(SEPARATOREXPORT);
 
-			// Itérer bookList
+			// Itéreration
 			Iterator<Stagiaire> it = laListeDeStagiaire.iterator();
 			while (it.hasNext()) {
 				Stagiaire stagiaireExport = (Stagiaire) it.next();

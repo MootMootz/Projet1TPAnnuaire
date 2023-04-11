@@ -1,6 +1,5 @@
 package fr.isika.cda24.TPAnnuaire.entitees;
 
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -13,7 +12,6 @@ public class ArbreBinaireDeRechercheAnnuaire {
 	private RandomAccessFile raf;
 
 	private Noeud racine;
-
 
 	public ArbreBinaireDeRechercheAnnuaire() throws IOException {
 
@@ -66,7 +64,6 @@ public class ArbreBinaireDeRechercheAnnuaire {
 		this.racine = racine;
 	}
 
-
 	public RandomAccessFile getRaf() {
 		return raf;
 	}
@@ -74,7 +71,7 @@ public class ArbreBinaireDeRechercheAnnuaire {
 	public void setRaf(RandomAccessFile raf) {
 		this.raf = raf;
 	}
-	
+
 	public void ajouterDansArbre(Stagiaire nomAjout, RandomAccessFile raf) throws IOException {
 		// si arbre vide
 		if (raf.length() == 0) {
@@ -96,14 +93,14 @@ public class ArbreBinaireDeRechercheAnnuaire {
 			noeudCourant.affichageInfixeNoeud(raf);
 		}
 	}
-	
+
 	public void affichageInfixe(List<Stagiaire> lesStagiaires) throws IOException { // doit être public arraylist
 		if (raf.length() == 0) {
 			System.out.println("arbre vide");
 		} else {
 			raf.seek(0);
 			Noeud noeudCourant = racine.lireStagiaire(raf);
-			noeudCourant.affichageInfixeNoeud(raf,lesStagiaires);
+			noeudCourant.affichageInfixeNoeud(raf, lesStagiaires);
 		}
 	}
 
@@ -121,27 +118,23 @@ public class ArbreBinaireDeRechercheAnnuaire {
 
 	public void modifier(Noeud stagiaireModif, Stagiaire stagiaireMaj, RandomAccessFile raf) throws IOException {
 
-			if (raf.length() != 0) {
-				racine.supprimerNoeud(stagiaireModif, raf, 0);
-				racine.ajouterNoeud(stagiaireMaj, raf);
-			}
+		if (raf.length() != 0) {
+			racine.supprimerNoeud(stagiaireModif, raf, 0);
+			racine.ajouterNoeud(stagiaireMaj, raf);
 		}
-	
-	public void supprimer(Noeud stagiaireSuppr,RandomAccessFile raf) throws IOException{
-		
-		if (raf.length()==0) {
+	}
+
+	public void supprimer(Noeud stagiaireSuppr, RandomAccessFile raf) throws IOException {
+
+		if (raf.length() == 0) {
 			System.out.println("Il n'y a rien à supprimer");
 		} else {
 			raf.seek(0);
 			racine = racine.lireStagiaire(raf);
-			//System.out.println(racine);
-			racine.rechercherStagiaireSuppr(stagiaireSuppr.getCle().getNom(),0, raf);
+			// System.out.println(racine);
+			racine.rechercherStagiaireSuppr(stagiaireSuppr.getCle().getNom(), 0, raf);
 		}
-		
+
 	}
 
-	
-	
-	
-	
-    }
+}

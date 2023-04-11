@@ -3,6 +3,7 @@ module fr.isika.cda24.TPAnnnuaire {
     requires javafx.base;
 	requires javafx.graphics;
 	requires java.desktop;
+	requires itextpdf;
 	opens fr.isika.cda24.TPAnnuaire.program to javafx.controls, javafx.base, javafx.graphics;
     exports fr.isika.cda24.TPAnnuaire;
     exports fr.isika.cda24.TPAnnuaire.entitees;

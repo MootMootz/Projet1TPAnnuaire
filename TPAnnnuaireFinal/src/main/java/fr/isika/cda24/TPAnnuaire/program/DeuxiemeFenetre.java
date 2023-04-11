@@ -1,11 +1,15 @@
 
 package fr.isika.cda24.TPAnnuaire.program;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 import fr.isika.cda24.TPAnnuaire.entitees.ArbreBinaireDeRechercheAnnuaire;
 import fr.isika.cda24.TPAnnuaire.entitees.Noeud;
 import fr.isika.cda24.TPAnnuaire.entitees.Stagiaire;
@@ -109,25 +113,26 @@ public class DeuxiemeFenetre extends GridPane {
 				if ((username.equals("André") && password.equals("Bastos"))
 						|| (username.equals("Florian") && password.equals("Lestieux"))
 						|| (username.equals("David") && password.equals("Aitcheou"))) {
-				
+
 					isAdmin = true;
 					btn5.setVisible(isAdmin);
 					btn6.setVisible(isAdmin);
 					btn1.setText("Se déconnecter");
 
 // Etape 03b : Faire le bnt1 changer de "Se Deconecter" pour "Se connecter" et faire disparaitre btn4 et btn5:				
-					
+
 //					btn1.setOnAction(event2 -> {
 //						
 //				}); 
-		
-				}else {
+
+				} else {
 					Alert alert = new Alert(Alert.AlertType.ERROR);
 					alert.getDialogPane().setStyle("-fx-background-color:#fffff0; -fx-font-family:'serif';");
 
 					alert.setTitle("Erreur de connexion");
 					alert.setHeaderText(null);
-					alert.setContentText("Veuillez vérifier vos informations d'identification et réessayer.\nNom d'utilisation ou mot de passe incorrect.");
+					alert.setContentText(
+							"Veuillez vérifier vos informations d'identification et réessayer.\nNom d'utilisation ou mot de passe incorrect.");
 					alert.showAndWait();
 
 					btn5.setVisible(false);
@@ -135,8 +140,8 @@ public class DeuxiemeFenetre extends GridPane {
 					tf1.clear();
 					pf1.clear();
 				}
-				
-				} else if (btn1.getText().equals("Se déconnecter")) {
+
+			} else if (btn1.getText().equals("Se déconnecter")) {
 				btn1.setText("Se connecter");
 				isAdmin = false;
 				btn5.setVisible(isAdmin);
@@ -144,7 +149,7 @@ public class DeuxiemeFenetre extends GridPane {
 				tf1.clear();
 				pf1.clear();
 			}
-		 });
+		});
 
 		btn3.setOnAction(event -> { // ajouter un stagiaire
 
@@ -175,8 +180,9 @@ public class DeuxiemeFenetre extends GridPane {
 
 			try {
 				rafraichirTableView();
-				
-				tableView.setItems(FXCollections.observableList(listeStagiaireMulti(mesStagiaires,tf2.getText(), tf3.getText(), tf4.getText(), tf5.getText(),tf6.getText())));
+
+				tableView.setItems(FXCollections.observableList(listeStagiaireMulti(mesStagiaires, tf2.getText(),
+						tf3.getText(), tf4.getText(), tf5.getText(), tf6.getText())));
 
 //				Stagiaire test = new Stagiaire(tf2.getText(), tf3.getText(), tf4.getText(), tf5.getText(),
 //						tf6.getText());
@@ -194,37 +200,36 @@ public class DeuxiemeFenetre extends GridPane {
 			}
 
 		});
-		
-		btn6.setOnAction(event -> {  // bouton de suppression
 
-				
-				Noeud stagiaireAsupprimer = null;
+		btn6.setOnAction(event -> { // bouton de suppression
+
+			Noeud stagiaireAsupprimer = null;
+			try {
+				stagiaireAsupprimer = abr.rechercher(getSelectedStagiaire().getNom(), abr.getRaf());
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			if (stagiaireAsupprimer != null) {
+
+				ArbreBinaireDeRechercheAnnuaire arbre;
 				try {
-					stagiaireAsupprimer = abr.rechercher(getSelectedStagiaire().getNom(), abr.getRaf());
-				} catch (IOException e1) {
+					arbre = new ArbreBinaireDeRechercheAnnuaire();
+
+					arbre.supprimer(stagiaireAsupprimer, abr.getRaf());
+
+					rafraichirTableView();
+
+				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					e.printStackTrace();
+
 				}
 
-				if (stagiaireAsupprimer != null) {
-					
-					ArbreBinaireDeRechercheAnnuaire arbre;
-					try {
-					arbre = new ArbreBinaireDeRechercheAnnuaire();
-					
-					arbre.supprimer(stagiaireAsupprimer,abr.getRaf());
-					
-					rafraichirTableView();
-					
-						} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace ();
-						
-						}
-					
-					
-				}});
-		
+			}
+		});
+
 		btn7.setOnAction(event -> {
 			try {
 				rafraichirTableView();
@@ -232,12 +237,18 @@ public class DeuxiemeFenetre extends GridPane {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		});
-		
-		btn4.setOnAction(event -> {
-			
-		});
+
+//		btn4.setOnAction(event -> {
+//
+//			try {
+//				List<Stagiaire> mesStagiaires = new ArrayList<>();
+//				String filePath = "src/main/java/TPAnnuaire/doc/MaListeDeStagiaire.pdf";
+//				exportToPDF(mesStagiaires, filePath);
+//			} catch (Exception e2) {
+//			}
+//		});
 
 // Etape 03c : Rendre les boutons btn4 et btn5 visibles quand d'un login ok:		
 		btn5.setVisible(isAdmin);
@@ -249,7 +260,8 @@ public class DeuxiemeFenetre extends GridPane {
 		vBox.setSpacing(10);
 		vBox.setMaxWidth(200);
 		vBox.setAlignment(Pos.CENTER_LEFT);
-		vBox.getChildren().addAll(lbl3, tf2, lbl4, tf3, lbl5, tf4, lbl6, tf5, lbl7, tf6, btn2, btn3, btn4, btn5, btn6,btn7);
+		vBox.getChildren().addAll(lbl3, tf2, lbl4, tf3, lbl5, tf4, lbl6, tf5, lbl7, tf6, btn2, btn3, btn4, btn5, btn6,
+				btn7);
 		vBox.setPrefSize(200, 200);
 		vBox.setStyle("-fx-background-color:#fffff0");
 		btn2.setMinWidth(vBox.getPrefWidth());
@@ -325,22 +337,46 @@ public class DeuxiemeFenetre extends GridPane {
 		abr.affichageInfixe(mesStagiaires);
 		tableView.setItems(FXCollections.observableList(mesStagiaires));
 	}
-	public List<Stagiaire> listeStagiaireMulti(List<Stagiaire> laListeDeStagiaire, String nom, String prenom, String departement, String promo, String annee) {
-		
-	    List<Stagiaire> listeStagiaireMulti = new ArrayList<>();
-System.out.println(nom +" "+ prenom);
-	    for (Stagiaire stagiaire : laListeDeStagiaire) {
-	        if ((nom.equals("") || stagiaire.getNom().trim().equalsIgnoreCase(nom))
-	                && (prenom.equals("") || stagiaire.getPrenom().trim().equalsIgnoreCase(prenom))
-	                && (departement.equals("") || stagiaire.getDepartement().trim().equalsIgnoreCase(departement))
-	                && (promo.equals("")|| stagiaire.getPromo().trim().equalsIgnoreCase(promo))
-	                && (annee.equals("")|| stagiaire.getAnnee().trim().equalsIgnoreCase(annee))) {
-	        	listeStagiaireMulti.add(stagiaire);
-	        	System.out.println("j'ajoute un stagiaire :)");
-	        }
-	        System.out.println("je teste un stagiaire :)");
-	    }
 
-	    return listeStagiaireMulti;
+	public List<Stagiaire> listeStagiaireMulti(List<Stagiaire> laListeDeStagiaire, String nom, String prenom,
+			String departement, String promo, String annee) {
+
+		List<Stagiaire> listeStagiaireMulti = new ArrayList<>();
+		System.out.println(nom + " " + prenom);
+		for (Stagiaire stagiaire : laListeDeStagiaire) {
+			if ((nom.equals("") || stagiaire.getNom().trim().equalsIgnoreCase(nom))
+					&& (prenom.equals("") || stagiaire.getPrenom().trim().equalsIgnoreCase(prenom))
+					&& (departement.equals("") || stagiaire.getDepartement().trim().equalsIgnoreCase(departement))
+					&& (promo.equals("") || stagiaire.getPromo().trim().equalsIgnoreCase(promo))
+					&& (annee.equals("") || stagiaire.getAnnee().trim().equalsIgnoreCase(annee))) {
+
+				listeStagiaireMulti.add(stagiaire);
+
+				System.out.println("j'ajoute un stagiaire :)");
+			}
+			System.out.println("je teste un stagiaire :)");
+		}
+
+		return listeStagiaireMulti;
 	}
-}
+	
+//	    public void exportToPDF(List<Stagiaire> mesStagiaires, String filePath) throws IOException, DocumentException {
+//	        
+//	        // Create a new PDF document
+//	        Document document = new Document();
+//	        
+//	        // Create a PDF writer that writes to a file
+//	        PdfWriter.getInstance(document, new FileOutputStream(filePath));
+//	        
+//	        document.open();
+//	        
+//	        // Add a paragraph for each stagiaire in the array list
+//	        for (Stagiaire stagiaire : mesStagiaires) {
+//	            Paragraph para = new Paragraph(stagiaire.toString());
+//	            document.add(para);
+//	        }
+//	        
+////	        document.close();
+//	    }
+//	    
+	}
